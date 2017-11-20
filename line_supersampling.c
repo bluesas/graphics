@@ -53,13 +53,24 @@ int main()
 {
     unsigned char *p = img;
     // memset(img, 255, sizeof(img));
+
+    int sh = 5;
+    int sw = 5;
     for (int y = 0; y < H; y++)
     {
         for (int x = 0; x < W; x++, p += 3)
         {
-            p[0] = p[1] = p[2] = (unsigned char)((1 - sample(x, y)) * 255);
+            float sum = 0;
+            for (int j = -sh / 2; j <= sh / 2; j++)
+            {
+                for (int i = -sw / 2; i <= sw / 2; i++)
+                {
+                    sum += sample(x + (float) i / sw, y + (float) j / sh);
+                }
+            }
+            p[0] = p[1] = p[2] = (unsigned char)((1 - sum / (sh * sw)) * 255);
         }
     }
 
-    svpng(fopen("line_sampling.png", "wb"), W, H, img, 0);
+    svpng(fopen("line_supersampling.png", "wb"), W, H, img, 0);
 }
